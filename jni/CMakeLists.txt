@@ -1,3 +1,4 @@
+# region @MadeByLLM("gpt-6", id = "android13-arm64")
 cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 cmake_policy(SET CMP0048 NEW)
 project(leveldbjni VERSION 1.0.0 LANGUAGES C CXX)
@@ -5,6 +6,10 @@ message("${CMAKE_PROJECT_NAME} platform: ${ANDROID_PLATFORM} flavor: ${TGX_FLAVO
 
 if (NOT DEFINED ANDROID_MIN_SDK_VERSION)
   message(FATAL_ERROR "ANDROID_MIN_SDK_VERSION is not set")
+endif()
+
+if (ANDROID_MIN_SDK_VERSION LESS 33 OR NOT ANDROID_ABI STREQUAL "arm64-v8a")
+  message(FATAL_ERROR "Only Android 13+ (API 33+) and arm64-v8a are supported")
 endif()
 
 # Common flags
@@ -19,21 +24,10 @@ add_compile_options(
   "$<$<CONFIG:Release,RelWithDebInfo,MinSizeRel>:-fno-asynchronous-unwind-tables>"
 )
 
-if (ANDROID_MIN_SDK_VERSION GREATER_EQUAL 30)
-  add_link_options(
-    "-Wl,--pack-dyn-relocs=android+relr"
-    "-Wl,--no-use-android-relr-tags"
-  )
-elseif (ANDROID_MIN_SDK_VERSION GREATER_EQUAL 28)
-  add_link_options(
-    "-Wl,--pack-dyn-relocs=android+relr"
-    "-Wl,--use-android-relr-tags"
-  )
-elseif (ANDROID_MIN_SDK_VERSION GREATER_EQUAL 23)
-  add_link_options(
-    "-Wl,--pack-dyn-relocs=android"
-  )
-endif()
+add_link_options(
+  "-Wl,--pack-dyn-relocs=android+relr"
+  "-Wl,--no-use-android-relr-tags"
+)
 
 # Build leveldb
 
@@ -52,12 +46,10 @@ add_library(leveldb-lib STATIC IMPORTED)
 set_target_properties( leveldb-lib PROPERTIES IMPORTED_LOCATION
   ${LEVELDB_BUILD_DIR}/libleveldb.a
 )
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
-  target_include_directories(leveldb-lib INTERFACE
-    ${LEVELDB_BUILD_DIR}/include
-    ${LEVELDB_SRC_DIR}/include
-  )
-endif()
+target_include_directories(leveldb-lib INTERFACE
+  ${LEVELDB_BUILD_DIR}/include
+  ${LEVELDB_SRC_DIR}/include
+)
 
 # Build jni-utils
 
@@ -70,12 +62,6 @@ add_subdirectory(
 add_library(leveldbjni SHARED
   db_jni.cpp
 )
-if(${CMAKE_VERSION} VERSION_LESS "3.11.0")
-  target_include_directories(leveldbjni PRIVATE
-    ${LEVELDB_SRC_DIR}/include
-    ${LEVELDB_BUILD_DIR}/include
-  )
-endif()
 
 target_link_libraries(leveldbjni
   leveldb-lib
@@ -90,15 +76,8 @@ target_link_options(leveldbjni PRIVATE
   "$<$<CONFIG:Release,RelWithDebInfo,MinSizeRel>:-flto=full>"
 )
 
-if (${ANDROID_ABI} STREQUAL "arm64-v8a" OR ${ANDROID_ABI} STREQUAL "x86_64")
-  # Enable 16 KB ELF alignment.
-  target_link_options(leveldbjni PRIVATE
-    "-Wl,-z,max-page-size=16384"
-  )
-endif()
-
-if (ANDROID_MIN_SDK_VERSION GREATER_EQUAL 23)
-  target_link_options(leveldbjni PRIVATE
-    "-Wl,--pack-dyn-relocs=android"
-  )
-endif()
+# Enable 16 KB ELF alignment.
+target_link_options(leveldbjni PRIVATE
+  "-Wl,-z,max-page-size=16384"
+)
+# endregion

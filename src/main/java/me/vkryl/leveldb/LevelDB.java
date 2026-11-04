@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 
 /*
  * This file is a part of LevelDB Preferences
@@ -21,7 +22,6 @@
 package me.vkryl.leveldb;
 
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.SystemClock;
 import android.util.Log;
@@ -910,19 +910,11 @@ public final class LevelDB implements SharedPreferences, SharedPreferences.Edito
     if (array == null) {
       return null;
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      android.util.ArraySet<String> result = new android.util.ArraySet<>(array.length);
-      if (array.length > 0) {
-        Collections.addAll(result, array);
-      }
-      return result;
-    } else {
-      if (array.length == 0) {
-        return new HashSet<>(0);
-      }
-      List<String> list = Arrays.asList(array);
-      return new HashSet<>(list);
+    android.util.ArraySet<String> result = new android.util.ArraySet<>(array.length);
+    if (array.length > 0) {
+      Collections.addAll(result, array);
     }
+    return result;
   }
 
   // SharedPreferences.Editor
@@ -1479,3 +1471,4 @@ public final class LevelDB implements SharedPreferences, SharedPreferences.Edito
     throw new UnsupportedOperationException();
   }
 }
+// endregion

@@ -1,5 +1,7 @@
 # LevelDB Preferences
 
+This TGX-Next fork targets Android 13+ (API 33+) in the arm64 Telegram X build.
+
 Java wrapper for [Google's LevelDB](https://github.com/google/leveldb) that implements [SharedPreferences](https://developer.android.com/reference/android/content/SharedPreferences) interface. Additionally, it supports iteration by prefix, array storage and lookup by value.
 
 For API documentation refer to javadoc inside [LevelDB.java](src/main/java/me/vkryl/leveldb/LevelDB.java).
