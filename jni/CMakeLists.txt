@@ -1,4 +1,3 @@
-# region @MadeByLLM("gpt-6", id = "android13-arm64")
 cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 cmake_policy(SET CMP0048 NEW)
 project(leveldbjni VERSION 1.0.0 LANGUAGES C CXX)
@@ -80,4 +79,3 @@ target_link_options(leveldbjni PRIVATE
 target_link_options(leveldbjni PRIVATE
   "-Wl,-z,max-page-size=16384"
 )
-# endregion
